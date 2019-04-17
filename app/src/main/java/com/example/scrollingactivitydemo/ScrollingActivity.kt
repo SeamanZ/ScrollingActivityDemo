@@ -1,5 +1,7 @@
 package com.example.scrollingactivitydemo
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.util.SparseArray
@@ -7,7 +9,10 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.LinearLayout.SHOW_DIVIDER_END
+import android.widget.LinearLayout.SHOW_DIVIDER_NONE
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
@@ -21,6 +26,10 @@ class ScrollingActivity : AppCompatActivity() {
 
     private lateinit var tabPageAdapter: TabPageAdapter
 
+    private var colorStateListPinned: ColorStateList? = null
+    private var colorStateList: ColorStateList? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scrolling)
@@ -28,6 +37,13 @@ class ScrollingActivity : AppCompatActivity() {
         supportActionBar?.apply {
             setDisplayShowTitleEnabled(false)
         }
+
+        colorStateListPinned = ContextCompat.getColorStateList(
+            this, R.color.tab_text_color_pinned
+        )
+        colorStateList = ContextCompat.getColorStateList(
+            this, R.color.tab_text_color
+        )
 
 
         val offset =
@@ -61,8 +77,26 @@ class ScrollingActivity : AppCompatActivity() {
                 if (swipeRefreshLayout.isEnabled != swipeEnabled) {
                     swipeRefreshLayout.isEnabled = swipeEnabled
                 }
+
+                val isTabPinned = (verticalOffset + appBarLayout.totalScrollRange) == 0
+
+                app_bar.apply {
+                    this.isEnabled = isTabPinned
+                    this.showDividers = if (isTabPinned) SHOW_DIVIDER_NONE else SHOW_DIVIDER_END
+                }
+
+                tabLayout.apply {
+                    if (isTabPinned) {
+                        this.tabTextColors = colorStateListPinned
+                        this.setBackgroundColor(Color.parseColor("#008577"))
+                    } else {
+                        this.tabTextColors = colorStateList
+                        this.setBackgroundColor(Color.parseColor("#FFFFFF"))
+                    }
+                }
+
                 val visibility =
-                    if (Math.abs(verticalOffset) == appBarLayout.totalScrollRange)
+                    if (isTabPinned)
                         View.VISIBLE
                     else
                         View.GONE

@@ -1,5 +1,6 @@
 package com.example.scrollingactivitydemo
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,7 +40,9 @@ class IndicesAdapter : RecyclerView.Adapter<ListViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
-
+        holder.itemView.setOnClickListener {
+            Log.v("IndicesAdapter", "setOnClickListener position = ${holder.adapterPosition}")
+        }
     }
 
     override fun getItemCount(): Int {
